@@ -3,10 +3,24 @@ from lib import RedisBD
 from flask import Flask
 from flask_graphql import GraphQLView
 
+class PlayerScore(ObjectType):
+    name=String()
+    score=Int()
+    def resolve_name(playerScore, info):
+        return playerScore.name
+    
+    def resolve_score(playerScore, info):
+        return playerScore.score
+
+bd = RedisBD()
+
 class GameSession(ObjectType):
+    global bd
+    
     id=Int()
     label=String()
     timestamp=Int()
+    scoreboard=List(PlayerScore)
     
     def resolve_id(gameSession, info):
         return gameSession.id
@@ -17,7 +31,9 @@ class GameSession(ObjectType):
     def resolve_timestamp(gameSession, info):
         return gameSession.timestamp
     
-bd = RedisBD()
+    def resolve_scoreboard(gameSession, info):
+        return bd.get_game_session(gameSession.id.decode("utf-8") )
+
 
 class Query(ObjectType):
     global bd
@@ -25,7 +41,7 @@ class Query(ObjectType):
     active_sessions = List(GameSession)
     
     def resolve_recent_sessions(root, info):
-        return bd.get_active_sessions() # TODO change
+        return bd.get_active_sessions()
     
     def resolve_active_sessions(root, info):
         return bd.get_active_sessions() 
