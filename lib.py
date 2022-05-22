@@ -1,4 +1,3 @@
-from smtplib import SMTPResponseException
 import redis
 from collections import namedtuple
 

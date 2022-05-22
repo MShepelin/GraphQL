@@ -1,5 +1,7 @@
-from graphene import ObjectType, String, Int, Schema, Field, List
-from server_back import RedisBD
+from graphene import ObjectType, String, Int, Schema, List
+from lib import RedisBD
+from flask import Flask
+from flask_graphql import GraphQLView
 
 class GameSession(ObjectType):
     id=Int()
@@ -29,5 +31,9 @@ class Query(ObjectType):
         return bd.get_active_sessions() 
 
 schema = Schema(query=Query)
-result = schema.execute('{ recentSessions { id label } }')
-print(result.data)
+app = Flask(__name__)
+app.add_url_rule(
+  '/',
+  view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True)
+)
+app.run()
