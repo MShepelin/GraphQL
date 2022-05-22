@@ -36,4 +36,6 @@ app.add_url_rule(
   '/',
   view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True)
 )
-app.run()
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5001)
